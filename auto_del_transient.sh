@@ -12,7 +12,9 @@ TMP=/var/tmp/
 ENTRIES_FILE="${TMP}entries.$$"
 
 ${MYSQL} <<'EOF'
-DELETE FROM `liathia_options` WHERE `option_name` LIKE ('_transient_%'); #Thay vao ten table _options
-DELETE FROM `liathia_options` WHERE `option_name` LIKE ('_site_transient_%'); #Thay vao ten table _options
+#Thay vao ten table _options
+DELETE FROM `liathia_options` WHERE `option_name` LIKE ('_transient_%');
+#Thay vao ten table _options
+DELETE FROM `liathia_options` WHERE `option_name` LIKE ('_site_transient_%');
 exit
 EOF
