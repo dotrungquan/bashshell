@@ -1,14 +1,12 @@
 #!/bin/bash
 #Author: DOTRUNGQUAN.INFO
-# Thay thế các giá trị sau bằng thông tin thích hợp
-google_drive_id="xxxx"
-output_file_name="yyyy"
+# Hỏi người dùng nhập ID của file từ Google Drive
+read -p "Nhập ID của file trên Google Drive: " file_id
 
-# Tạo tệp cookie tạm thời
-temp_cookies="/tmp/cookies.txt"
+# Hỏi người dùng nhập tên file lưu trữ
+read -p "Nhập tên file lưu trữ: " file_name
 
-# Tải file từ Google Drive
-wget --load-cookies "$temp_cookies" "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies "$temp_cookies" --keep-session-cookies --no-check-certificate "https://docs.google.com/uc?export=download&id=$google_drive_id" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=$google_drive_id" -O "$output_file_name"
+# Sử dụng wget để tải file từ Google Drive
+wget --load-cookies /tmp/cookies.txt "https://docs.google.com/uc?export=download&confirm=$(wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate "https://docs.google.com/uc?export=download&id=$file_id" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p')&id=$file_id" -O "$file_name" && rm -rf /tmp/cookies.txt
 
-# Xóa tệp cookie tạm thời
-rm -rf "$temp_cookies"
+echo "Tải file thành công! File đã được lưu trữ với tên '$file_name'."
