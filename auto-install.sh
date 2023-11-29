@@ -23,11 +23,12 @@ echo -e "\n"
 
 install_hostvn_script() {
     os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-    
-    if [[ $os_name == *"Ubuntu"* ]]; then
+    os_version=$(lsb_release -rs)
+
+    if [[ $os_name == "Ubuntu" && ($os_version == "18.04" || $os_version == "20.04") ]] || [[ $os_name == "Debian" && $os_version == "10" ]]; then
         wget https://scripts.hostvn.net/install && bash install
     else
-        echo "HostVN Script chỉ hỗ trợ Ubuntu. Thoát."
+        echo "HostVN Script chỉ hỗ trợ Ubuntu 18.04, 20.04 và Debian 10. Thoát."
         exit 1
     fi
 }
