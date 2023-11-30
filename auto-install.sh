@@ -2,7 +2,7 @@
 #Author: Đỗ Trung Quân
 echo "####################################################################################"
 echo "#                                                                                  #"
-echo "#  Đây là script tổng hợp cài đặt các Control Panel và Script được viết bởi        #"
+echo "#  Script tổng hợp cài đặt các Control Panel và Script được viết bởi               #"
 echo "#  DOTRUNGQUAN.INFO. Hãy chọn Control Panel hoặc Script mà bạn muốn cài đặt.       #"
 echo "#  Tham gia nhóm Hỗ trợ Server - Hosting & WordPress để được trợ giúp.             #"
 echo "#  Facebook: https://www.facebook.com/groups/hotroserverhostingwordpress.          #"
@@ -86,6 +86,28 @@ install_cyberpanel() {
     sh <(curl https://cyberpanel.net/install.sh || wget -O - https://cyberpanel.net/install.sh)
 }
 
+install_directadmin() {
+    os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+    
+    if [[ $os_name == *"CentOS"* ]]; then
+        wget https://topwhmcs.com/DA/setup.sh && chmod +x setup.sh && ./setup.sh
+    else
+        echo "Directadmin Bypass chỉ hỗ trợ CentOS. Thoát."
+        exit 1
+    fi
+}
+
+install_bypassdirectadmin() {
+    os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+    
+    if [[ $os_name == *"CentOS"* ]]; then
+        wget https://raw.githubusercontent.com/dotrungquan/directadmin/main/fixpath.sh && chmod +x fixpath.sh && ./fixpath.sh
+    else
+        echo "Directadmin Bypass chỉ hỗ trợ CentOS. Thoát."
+        exit 1
+    fi
+}
+
 install_hostvn_script() {
     os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
     os_version=$(lsb_release -rs)
@@ -160,6 +182,8 @@ install_control_panel() {
     echo "| 3. Cài đặt AApanel                          |"
     echo "| 4. Cài đặt FastPanel                        |"
     echo "| 5. Cài đặt CyberPanel                       |"
+    echo "| 6. Cài đặt DirectAdmin                      |"
+    echo "| 7. ByPass DirectAdmin đã cài ở trên                      |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " control_panel_choice
@@ -170,6 +194,8 @@ install_control_panel() {
         3) install_aapanel ;;
         4) install_fastpanel ;;
         5) install_cyberpanel ;;
+        6) install_directadmin ;;
+        7) install_bypassdirectadmin ;;
         *) echo "Lựa chọn không hợp lệ. Thoát." && exit 1 ;;
     esac
 }
