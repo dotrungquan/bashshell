@@ -183,7 +183,7 @@ install_control_panel() {
     echo "| 4. Cài đặt FastPanel                        |"
     echo "| 5. Cài đặt CyberPanel                       |"
     echo "| 6. Cài đặt DirectAdmin                      |"
-    echo "| 7. ByPass DirectAdmin đã cài ở trên                      |"
+    echo "| 7. ByPass DirectAdmin đã cài ở trên         |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " control_panel_choice
@@ -233,7 +233,7 @@ main_menu() {
     echo "+---------------------------------------------+"
     echo "| 1. Cài đặt Control Panel                    |"
     echo "| 2. Cài đặt Script                           |"
-    echo "| 0. Thoát                                   |"
+    echo "| 0. Thoát                                    |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " main_choice
     case $main_choice in
