@@ -363,7 +363,7 @@ install_control_panel() {
     echo "| 4. Cài đặt FastPanel                        |"
     echo "| 5. Cài đặt CyberPanel                       |"
     echo "| 6. Cài đặt CWP (Control-WebPanel)           |"
-    echo "| 7. Cài đặt Webmin               		|"
+    echo "| 7. Cài đặt Webmin               		    |"
     echo "| 8. Cài đặt DirectAdmin                      |"
     echo "| 9. ByPass DirectAdmin đã cài ở trên         |"
     echo "| 0. Quay lại Menu Chính                      |"
