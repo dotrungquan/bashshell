@@ -163,34 +163,53 @@ install_webmin() {
 }
 
 install_directadmin() {
-    os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+    echo "Vui lòng chọn:"
+    echo "1. Cài đặt DirectAdmin mới"
+    echo "2. Bypass License DirectAdmin"
+    echo "0. Quay lại Menu Chính"
+    read -p "Nhập vào lựa chọn của bạn: " os_choice
 
-    if [[ $os_name == *"CentOS"* ]]; then
-        wget https://topwhmcs.com/DA/setup.sh && chmod +x setup.sh && ./setup.sh
-    else
-        echo "Directadmin Bypass chỉ hỗ trợ CentOS. Thoát."
-        exit 1
-    fi
+    case $os_choice in
+        1)
+            os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+
+            if [[ $os_name == *"CentOS"* ]]; then
+                wget https://topwhmcs.com/DA/setup.sh && chmod +x setup.sh && ./setup.sh
+            else
+                echo "Directadmin Bypass chỉ hỗ trợ CentOS. Thoát."
+                exit 1
+            fi
+            ;;
+
+        2)
+            os_info_file="/etc/os-release"
+
+            if [ -f "$os_info_file" ]; then
+                os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+            else
+                os_name=""
+            fi
+
+            supported_os="CentOS"
+
+            if [[ $os_name == *"$supported_os"* ]]; then
+                wget https://raw.githubusercontent.com/dotrungquan/directadmin/main/fixpath.sh && chmod +x fixpath.sh && ./fixpath.sh
+            else
+                echo "Directadmin Bypass chỉ hỗ trợ CentOS. Thoát."
+                exit 1
+            fi
+            ;;
+
+        0)
+            main_menu ;;
+        
+        *)
+            echo "Lựa chọn không hợp lệ. Thoát."
+            exit 1
+            ;;
+    esac
 }
 
-install_bypassdirectadmin() {
-    os_info_file="/etc/os-release"
-
-    if [ -f "$os_info_file" ]; then
-        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
-    else
-        os_name=""
-    fi
-
-    supported_os="CentOS"
-
-    if [[ $os_name == *"$supported_os"* ]]; then
-        wget https://raw.githubusercontent.com/dotrungquan/directadmin/main/fixpath.sh && chmod +x fixpath.sh && ./fixpath.sh
-    else
-        echo "Directadmin Bypass chỉ hỗ trợ CentOS. Thoát."
-        exit 1
-    fi
-}
 
 
 install_hostvn_script() {
@@ -363,9 +382,8 @@ install_control_panel() {
     echo "| 4. Cài đặt FastPanel                        |"
     echo "| 5. Cài đặt CyberPanel                       |"
     echo "| 6. Cài đặt CWP (Control-WebPanel)           |"
-    echo "| 7. Cài đặt Webmin               		    |"
+    echo "| 7. Cài đặt Webmin 							|"
     echo "| 8. Cài đặt DirectAdmin                      |"
-    echo "| 9. ByPass DirectAdmin đã cài ở trên         |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " control_panel_choice
@@ -377,9 +395,8 @@ install_control_panel() {
         4) install_fastpanel ;;
         5) install_cyberpanel ;;
         6) install_cwp ;;
-        6) install_webmin ;;
+        7) install_webmin ;;
         8) install_directadmin ;;
-        9) install_bypassdirectadmin ;;
         *) echo "Lựa chọn không hợp lệ. Thoát." && exit 1 ;;
     esac
 }
