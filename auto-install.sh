@@ -8,6 +8,7 @@ echo "#  Tham gia nhóm Hỗ trợ Server - Hosting & WordPress để được t
 echo "#  Facebook: https://www.facebook.com/groups/hotroserverhostingwordpress.          #"
 echo "#                                                                                  #"
 echo "####################################################################################"
+echo -e "\n"
 
 # Thông tin hệ điều hành
 echo "Thông tin hệ điều hành đang sử dụng:"
@@ -33,16 +34,68 @@ echo "-------------------------------------"
 echo -e "\n"
 
 install_hestiacp() {
-    apt -y install curl wget sudo
-    wget https://raw.githubusercontent.com/hestiacp/hestiacp/release/install/hst-install.sh
-    bash hst-install.sh -f
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+        os_version=$(grep -oP '(?<=^VERSION_ID=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+        os_version=""
+    fi
+
+    supported_os=("Debian" "Ubuntu")
+    debian_versions=("10" "11" "12")
+    ubuntu_versions=("20.04" "22.04")
+
+    if [[ "${supported_os[@]}" =~ "${os_name}" ]]; then
+        if [[ "${os_name}" == "Debian" && "${debian_versions[@]}" =~ "${os_version}" ]] || \
+           [[ "${os_name}" == "Ubuntu" && "${ubuntu_versions[@]}" =~ "${os_version}" ]]; then
+            apt -y install curl wget sudo
+            wget https://raw.githubusercontent.com/hestiacp/hestiacp/release/install/hst-install.sh
+            bash hst-install.sh -f
+        else
+            echo "HestiaCP chỉ hỗ trợ Debian 10, 11, 12 và Ubuntu 20.04, 22.04 LTS. Thoát."
+            exit 1
+        fi
+    else
+        echo "HestiaCP chỉ hỗ trợ Debian và Ubuntu. Thoát."
+        exit 1
+    fi
 }
 
+
 install_cloudpanel() {
-    apt -y install curl wget sudo
-    curl -sS https://installer.cloudpanel.io/ce/v2/install.sh -o install.sh
-    echo "85762db0edc00ce19a2cd5496d1627903e6198ad850bbbdefb2ceaa46bd20cbd install.sh" | sha256sum -c && sudo DB_ENGINE=MARIADB_10.6 bash install.sh
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+        os_version=$(grep -oP '(?<=^VERSION_ID=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+        os_version=""
+    fi
+
+    supported_os=("Debian" "Ubuntu")
+    debian_version="11"
+    ubuntu_version="22.04"
+
+    if [[ "${supported_os[@]}" =~ "${os_name}" ]]; then
+        if [[ "${os_name}" == "Debian" && "${os_version}" == "${debian_version}" ]] || \
+           [[ "${os_name}" == "Ubuntu" && "${os_version}" == "${ubuntu_version}" ]]; then
+            apt -y install curl wget sudo
+            curl -sS https://installer.cloudpanel.io/ce/v2/install.sh -o install.sh
+            echo "85762db0edc00ce19a2cd5496d1627903e6198ad850bbbdefb2ceaa46bd20cbd install.sh" | sha256sum -c && sudo DB_ENGINE=MARIADB_10.6 bash install.sh
+        else
+            echo "CloudPanel chỉ hỗ trợ Debian 11 và Ubuntu 22.04. Thoát."
+            exit 1
+        fi
+    else
+        echo "CloudPanel chỉ hỗ trợ Debian và Ubuntu. Thoát."
+        exit 1
+    fi
 }
+
 
 install_aapanel() {
     echo "Chọn hệ điều hành để cài đặt AApanel:"
@@ -98,9 +151,17 @@ install_directadmin() {
 }
 
 install_bypassdirectadmin() {
-    os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-    
-    if [[ $os_name == *"CentOS"* ]]; then
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+    fi
+
+    supported_os="CentOS"
+
+    if [[ $os_name == *"$supported_os"* ]]; then
         wget https://raw.githubusercontent.com/dotrungquan/directadmin/main/fixpath.sh && chmod +x fixpath.sh && ./fixpath.sh
     else
         echo "Directadmin Bypass chỉ hỗ trợ CentOS. Thoát."
@@ -108,17 +169,29 @@ install_bypassdirectadmin() {
     fi
 }
 
-install_hostvn_script() {
-    os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-    os_version=$(lsb_release -rs)
 
-    if [[ $os_name == "Ubuntu" && ($os_version == "18.04" || $os_version == "20.04") ]] || [[ $os_name == "Debian" && $os_version == "10" ]]; then
+install_hostvn_script() {
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+        os_version=$(grep -oP '(?<=^VERSION_ID=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+        os_version=""
+    fi
+
+    supported_os=("Ubuntu")
+    supported_versions=("18.04" "20.04")
+
+    if [[ "${supported_os[@]}" =~ "${os_name}" ]] && [[ "${supported_versions[@]}" =~ "${os_version}" ]]; then
         wget https://scripts.hostvn.net/install && bash install
     else
-        echo "HostVN Script chỉ hỗ trợ Ubuntu 18.04, 20.04 và Debian 10. Thoát."
+        echo "HostVN Script chỉ hỗ trợ Ubuntu 18.04 và 20.04. Thoát."
         exit 1
     fi
 }
+
 
 install_hocvps() {
     os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
@@ -163,6 +236,90 @@ install_tinovps_script() {
         exit 1
     fi
 }
+
+install_webinoly_script() {
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+        os_version=$(grep -oP '(?<=^VERSION_ID=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+        os_version=""
+    fi
+
+    supported_os=("Ubuntu")
+    supported_versions=("20.04" "22.04")
+
+    if [[ "${supported_os[@]}" =~ "${os_name}" ]] && [[ "${supported_versions[@]}" =~ "${os_version}" ]]; then
+        wget -qO weby qrok.es/wy && sudo bash weby -lemp -ver=v1.17.8
+    else
+        echo "webinoly Script chỉ hỗ trợ Ubuntu 20.04, 22.04. Thoát."
+        exit 1
+    fi
+}
+
+install_easyengine_script() {
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+        os_version=$(grep -oP '(?<=^VERSION_ID=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+        os_version=""
+    fi
+
+    supported_os=("Ubuntu" "Debian")
+    ubuntu_versions=("18.04" "20.04" "22.04")
+    debian_versions=("8" "9" "10")
+
+    if [[ "${supported_os[@]}" =~ "${os_name}" ]]; then
+        if [[ "${os_name}" == "Ubuntu" && "${ubuntu_versions[@]}" =~ "${os_version}" ]] || \
+           [[ "${os_name}" == "Debian" && "${debian_versions[@]}" =~ "${os_version}" ]]; then
+            wget -qO ee https://rt.cx/ee4 && sudo bash ee
+        else
+            echo "EE (EasyEngine) chỉ hỗ trợ Ubuntu 18.04, 20.04 và Debian 8, 9, 10. Thoát."
+            exit 1
+        fi
+    else
+        echo "EE (EasyEngine) chỉ hỗ trợ Ubuntu và Debian. Thoát."
+        exit 1
+    fi
+}
+
+install_wordops_script() {
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+        os_version=$(grep -oP '(?<=^VERSION_ID=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+        os_version=""
+    fi
+
+    supported_os=("Ubuntu" "Debian")
+    ubuntu_versions=("16.04" "18.04" "20.04" "22.04")
+    debian_versions=("9" "10")
+    raspbian_versions=("9" "10")
+
+    if [[ "${supported_os[@]}" =~ "${os_name}" ]]; then
+        if [[ "${os_name}" == "Ubuntu" && "${ubuntu_versions[@]}" =~ "${os_version}" ]] || \
+           [[ "${os_name}" == "Debian" && "${debian_versions[@]}" =~ "${os_version}" ]]; then
+            wget -qO wo wops.cc && sudo bash wo
+        elif [[ "${os_name}" == "Raspbian" && "${raspbian_versions[@]}" =~ "${os_version}" ]]; then
+            wget -qO wo wops.cc && sudo bash wo
+        else
+            echo "WordOps chỉ hỗ trợ Ubuntu 16.04, 18.04, 20.04, 22.04, Debian 9, 10, Raspbian 9, 10. Thoát."
+            exit 1
+        fi
+    else
+        echo "WordOps chỉ hỗ trợ Ubuntu, Debian và Raspbian. Thoát."
+        exit 1
+    fi
+}
+
 
 # Hàm quay lại Menu Chính
 back_to_main_menu() {
@@ -210,6 +367,9 @@ install_script() {
     echo "| 3. Cài đặt LarVPS                           |"
     echo "| 4. Cài đặt Centmind Mod                     |"
     echo "| 5. Cài đặt TinoVPS Script                   |"
+    echo "| 6. Cài đặt Script Webinoly                  |"
+    echo "| 7. Cài đặt EE (EasyEngine)                  |"
+    echo "| 8. Cài đặt WordOps                          |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " script_choice
@@ -220,6 +380,9 @@ install_script() {
         3) install_larvps ;;
         4) install_centmind_mod ;;
         5) install_tinovps_script ;;
+        6) install_webinoly_script ;;
+        7) install_easyengine_script ;;
+        8) install_wordops_script ;;
         *) echo "Lựa chọn không hợp lệ. Thoát." && exit 1 ;;
     esac
 }
