@@ -411,7 +411,7 @@ install_script() {
     echo "| 3. Cài đặt LarVPS                           |"
     echo "| 4. Cài đặt Centmind Mod                     |"
     echo "| 5. Cài đặt TinoVPS Script                   |"
-    echo "| 6. Cài đặt Script Webinoly                  |"
+    echo "| 6. Cài đặt Script Webinoly     |"
     echo "| 7. Cài đặt EE (EasyEngine)                  |"
     echo "| 8. Cài đặt WordOps                          |"
     echo "| 0. Quay lại Menu Chính                      |"
