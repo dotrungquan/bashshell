@@ -139,9 +139,32 @@ install_cyberpanel() {
     sh <(curl https://cyberpanel.net/install.sh || wget -O - https://cyberpanel.net/install.sh)
 }
 
+install_cwp() {
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+    fi
+
+    supported_os="CentOS"
+
+    if [[ $os_name == *"$supported_os"* ]]; then
+        cd /usr/local/src && wget http://centos-webpanel.com/cwp-el7-latest && sh cwp-el7-latest
+    else
+        echo "CWP (CentOS Web Panel) chỉ hỗ trợ trên CentOS. Thoát."
+        exit 1
+    fi
+}
+
+install_webmin() {
+    curl -o setup-repos.sh https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh && sh setup-repos.sh
+}
+
 install_directadmin() {
     os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-    
+
     if [[ $os_name == *"CentOS"* ]]; then
         wget https://topwhmcs.com/DA/setup.sh && chmod +x setup.sh && ./setup.sh
     else
@@ -195,7 +218,7 @@ install_hostvn_script() {
 
 install_hocvps() {
     os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-    
+
     if [[ $os_name == *"Ubuntu"* || $os_name == *"CentOS"* ]]; then
         curl -sO https://hocvps.com/install && bash install
     else
@@ -206,7 +229,7 @@ install_hocvps() {
 
 install_larvps() {
     os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-    
+
     if [[ $os_name == *"AlmaLinux"* || $os_name == *"Rocky"* || $os_name == *"Ubuntu"* ]]; then
         curl -sO https://larvps.com/scripts/larvps && bash larvps
     else
@@ -217,7 +240,7 @@ install_larvps() {
 
 install_centmind_mod() {
     os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-    
+
     if [[ $os_name == *"CentOS"* ]]; then
         curl -O https://centminmod.com/betainstaller74.sh && chmod 0700 betainstaller74.sh && bash betainstaller74.sh
     else
@@ -228,7 +251,7 @@ install_centmind_mod() {
 
 install_tinovps_script() {
     os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
-    
+
     if [[ $os_name == *"CentOS"* || $os_name == *"AlmaLinux"* ]]; then
         curl -sO https://scripts.tino.org/tinovps-install && sh tinovps-install
     else
@@ -339,8 +362,10 @@ install_control_panel() {
     echo "| 3. Cài đặt AApanel                          |"
     echo "| 4. Cài đặt FastPanel                        |"
     echo "| 5. Cài đặt CyberPanel                       |"
-    echo "| 6. Cài đặt DirectAdmin                      |"
-    echo "| 7. ByPass DirectAdmin đã cài ở trên         |"
+    echo "| 6. Cài đặt CWP (Control-WebPanel)           |"
+    echo "| 7. Cài đặt Webmin               		|"
+    echo "| 8. Cài đặt DirectAdmin                      |"
+    echo "| 9. ByPass DirectAdmin đã cài ở trên         |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " control_panel_choice
@@ -351,8 +376,10 @@ install_control_panel() {
         3) install_aapanel ;;
         4) install_fastpanel ;;
         5) install_cyberpanel ;;
-        6) install_directadmin ;;
-        7) install_bypassdirectadmin ;;
+        6) install_cwp ;;
+        6) install_webmin ;;
+        8) install_directadmin ;;
+        9) install_bypassdirectadmin ;;
         *) echo "Lựa chọn không hợp lệ. Thoát." && exit 1 ;;
     esac
 }
