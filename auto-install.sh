@@ -362,6 +362,21 @@ install_wordops_script() {
     fi
 }
 
+install_dlemp_script() {
+    os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
+
+    if [[ $os_name == *"CentOS"* ]]; then
+        curl -L https://script.dlemp.net -o dlemp && bash dlemp
+    else
+        echo "DLEMP chỉ hỗ trợ CentOS. Thoát."
+        exit 1
+    fi
+}
+
+install_lempstack() {
+    wget http://mirrors.linuxeye.com/oneinstack-full.tar.gz && tar xzf oneinstack-full.tar.gz && cd oneinstack && ./install.sh
+}
+
 
 # Hàm quay lại Menu Chính
 back_to_main_menu() {
@@ -411,9 +426,11 @@ install_script() {
     echo "| 3. Cài đặt LarVPS                           |"
     echo "| 4. Cài đặt Centmind Mod                     |"
     echo "| 5. Cài đặt TinoVPS Script                   |"
-    echo "| 6. Cài đặt Script Webinoly     |"
+    echo "| 6. Cài đặt Webinoly.                        |"
     echo "| 7. Cài đặt EE (EasyEngine)                  |"
     echo "| 8. Cài đặt WordOps                          |"
+    echo "| 9. Cài đặt DLEMP                            |"
+    echo "| 10. Cài đặt LEMP Stack                      |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " script_choice
@@ -427,6 +444,8 @@ install_script() {
         6) install_webinoly_script ;;
         7) install_easyengine_script ;;
         8) install_wordops_script ;;
+        9) install_dlemp_script ;;
+        10) install_lempstack ;;
         *) echo "Lựa chọn không hợp lệ. Thoát." && exit 1 ;;
     esac
 }
