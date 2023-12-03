@@ -1,35 +1,34 @@
 #!/bin/bash
-#Author: Đỗ Trung Quân
+#Author: DOTRUNGQUAN.INFO
+echo -e "\n"
 echo "####################################################################################"
 echo "#                                                                                  #"
-echo "#  Script tổng hợp cài đặt các Control Panel và Script được viết bởi               #"
-echo "#  DOTRUNGQUAN.INFO. Hãy chọn Control Panel hoặc Script mà bạn muốn cài đặt.       #"
+echo "#  Script tổng hợp cài đặt các Control Panel và Script được viết bởi Đỗ Trung Quân #"
 echo "#  Tham gia nhóm Hỗ trợ Server - Hosting & WordPress để được trợ giúp.             #"
 echo "#  Facebook: https://www.facebook.com/groups/hotroserverhostingwordpress.          #"
+echo "#  Telegram: https://t.me/hotrohostingvps                                          #"
+echo "#  Zalo: https://zalo.me/g/gpcvgh410                                               #"
 echo "#                                                                                  #"
 echo "####################################################################################"
 echo -e "\n"
 
-# Thông tin hệ điều hành
-echo "Thông tin hệ điều hành đang sử dụng:"
+# Lấy thông tin hệ điều hành
+os_info=$(awk -F= '/^PRETTY_NAME/{print $2}' /etc/os-release | tr -d '"')
+os_info_no_core=$(echo "$os_info" | sed 's/ (Core)//')
+
+# Lấy thông tin loadavg
+loadavg=$(uptime | awk -F'[a-z]:' '{ print $2}' | sed 's/,//g' | xargs)
+
+# In thông tin
+echo "Thông tin máy chủ đang sử dụng:"
 echo "-------------------------------------"
+echo "Hệ điều hành: $os_info_no_core"
 echo "IP:          $(hostname -I | cut -f1 -d' ')"
 echo "Dung lượng:  $(df -h | awk '$NF=="/"{printf "%s", $2}')"
 echo "RAM:         $(free -h | awk '/^Mem/ {printf "%s", $2}')"
 echo "Swap:        $(free -h | awk '/^Swap/ {printf "%s", $2}')"
 echo "CPU:         $(lscpu | grep '^CPU(s):' | awk '{printf "%s", $2}') core(s)"
-
-# Kiểm tra hệ điều hành và hiển thị thông tin phù hợp
-if [ -f /etc/os-release ]; then
-    # Hệ điều hành sử dụng /etc/os-release (bao gồm Ubuntu)
-    echo "Hệ điều hành: $(grep PRETTY_NAME /etc/os-release | cut -d= -f2- | tr -d '"')"
-elif [ -f /etc/redhat-release ]; then
-    # Hệ điều hành dựa trên Red Hat (bao gồm CentOS)
-    echo "Hệ điều hành: $(cat /etc/redhat-release)"
-else
-    # Trường hợp khác
-    echo "Không thể xác định hệ điều hành"
-fi
+echo "Load Average:     $loadavg"
 echo "-------------------------------------"
 echo -e "\n"
 
@@ -397,7 +396,7 @@ install_control_panel() {
     echo "| 4. Cài đặt FastPanel                        |"
     echo "| 5. Cài đặt CyberPanel                       |"
     echo "| 6. Cài đặt CWP (Control-WebPanel)           |"
-    echo "| 7. Cài đặt Webmin 							|"
+    echo "| 7. Cài đặt Webmin                           |"
     echo "| 8. Cài đặt DirectAdmin                      |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
