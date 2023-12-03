@@ -97,38 +97,45 @@ install_cloudpanel() {
 
 
 install_aapanel() {
-    echo "Chọn hệ điều hành để cài đặt AApanel:"
-    echo "1. CentOS"
-    echo "2. Ubuntu"
-    echo "3. Debian"
-    echo "0. Quay lại Menu Chính"
-    read -p "Nhập vào lựa chọn của bạn: " os_choice
+    echo "Đang xác định hệ điều hành..."
 
-    case $os_choice in
-        1)
+    # Lấy thông tin OS từ /etc/os-release
+    if [ -f "/etc/os-release" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' /etc/os-release | tr -d '"')
+    else
+        echo "Không thể xác định hệ điều hành. Thoát."
+        exit 1
+    fi
+
+    # Chuyển đổi tên hệ điều hành thành chữ thường để kiểm tra
+    os_name_lower=$(echo "$os_name" | tr '[:upper:]' '[:lower:]')
+
+    # Xác định lệnh cài đặt tương ứng với hệ điều hành
+    case $os_name_lower in
+        *centos*)
             yum install -y wget
             wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh
             sh install.sh 93684c35
             ;;
-        2)
-            apt-get update
-            apt-get -y install wget
-            wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
-            sudo bash install.sh 93684c35
-            ;;
-        3)
+        *ubuntu*)
             apt-get update
             apt-get -y install wget
             wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
             bash install.sh 93684c35
             ;;
-        0) main_menu ;;
+        *debian*)
+            apt-get update
+            apt-get -y install wget
+            wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
+            bash install.sh 93684c35
+            ;;
         *)
-            echo "Lựa chọn không hợp lệ. Thoát."
+            echo "Hệ điều hành không được hỗ trợ. Thoát."
             exit 1
             ;;
     esac
 }
+
 
 install_fastpanel() {
     wget http://repo.fastpanel.direct/install_fastpanel.sh -O - | bash -
