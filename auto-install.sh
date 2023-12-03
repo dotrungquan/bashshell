@@ -216,7 +216,9 @@ install_directadmin() {
     esac
 }
 
-
+install_vestacp() {
+    curl -O http://vestacp.com/pub/vst-install.sh && bash vst-install.sh
+}
 
 install_hostvn_script() {
     os_info_file="/etc/os-release"
@@ -405,6 +407,7 @@ install_control_panel() {
     echo "| 6. Cài đặt CWP (Control-WebPanel)           |"
     echo "| 7. Cài đặt Webmin                           |"
     echo "| 8. Cài đặt DirectAdmin                      |"
+    echo "| 9. Cài đặt VestaCP                          |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " control_panel_choice
@@ -418,6 +421,7 @@ install_control_panel() {
         6) install_cwp ;;
         7) install_webmin ;;
         8) install_directadmin ;;
+        9) install_vestacp ;;
         *) echo "Lựa chọn không hợp lệ. Thoát." && exit 1 ;;
     esac
 }
