@@ -5,7 +5,7 @@ echo "##########################################################################
 echo "#                                                                                  #"
 echo "#  Script tổng hợp cài đặt các Control Panel và Script được viết bởi Đỗ Trung Quân #"
 echo "#  Tham gia nhóm Hỗ trợ Server - Hosting & WordPress để được trợ giúp.             #"
-echo "#  Facebook: https://www.facebook.com/groups/hotroserverhostingwordpress.          #"
+echo "#  Facebook: https://www.facebook.com/groups/hotroserverhostingwordpress           #"
 echo "#  Telegram: https://t.me/hotrohostingvps                                          #"
 echo "#  Zalo: https://zalo.me/g/gpcvgh410                                               #"
 echo "#                                                                                  #"
@@ -21,15 +21,16 @@ loadavg=$(uptime | awk -F'[a-z]:' '{ print $2}' | sed 's/,//g' | xargs)
 
 # In thông tin
 echo "Thông tin máy chủ đang sử dụng:"
-echo "-------------------------------------"
+echo "-----------------------------------------------------------"
 echo "Hệ điều hành: $os_info_no_core"
 echo "IP:          $(hostname -I | cut -f1 -d' ')"
+echo "Hostname:    $(hostname)"
 echo "Dung lượng:  $(df -h | awk '$NF=="/"{printf "%s", $2}')"
 echo "RAM:         $(free -h | awk '/^Mem/ {printf "%s", $2}')"
 echo "Swap:        $(free -h | awk '/^Swap/ {printf "%s", $2}')"
 echo "CPU:         $(lscpu | grep '^CPU(s):' | awk '{printf "%s", $2}') core(s)"
 echo "Load Average:     $loadavg"
-echo "-------------------------------------"
+echo "-----------------------------------------------------------"
 echo -e "\n"
 
 install_hestiacp() {
@@ -436,7 +437,7 @@ install_script() {
     echo "| 3. Cài đặt LarVPS                           |"
     echo "| 4. Cài đặt Centmind Mod                     |"
     echo "| 5. Cài đặt TinoVPS Script                   |"
-    echo "| 6. Cài đặt Webinoly.                        |"
+    echo "| 6. Cài đặt Webinoly                         |"
     echo "| 7. Cài đặt EE (EasyEngine)                  |"
     echo "| 8. Cài đặt WordOps                          |"
     echo "| 9. Cài đặt DLEMP                            |"
