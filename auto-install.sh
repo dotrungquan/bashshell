@@ -12,24 +12,38 @@ echo "#                                                                         
 echo "####################################################################################"
 echo -e "\n"
 
-# Lấy thông tin hệ điều hành
 os_info=$(awk -F= '/^PRETTY_NAME/{print $2}' /etc/os-release | tr -d '"')
 os_info_no_core=$(echo "$os_info" | sed 's/ (Core)//')
 
-# Lấy thông tin loadavg
 loadavg=$(uptime | awk -F'[a-z]:' '{ print $2}' | sed 's/,//g' | xargs)
 
-# In thông tin
+cpu_model=$(lscpu | grep 'Model name' | awk -F':' '{print $2}' | xargs)
+num_cores=$(lscpu | grep '^CPU(s):' | awk '{printf "%s", $2}')
+cpu_frequency=$(lscpu | grep 'CPU MHz' | awk -F':' '{printf "%s", $2}' | xargs)
+
+total_disk_size=$(df -h --total | awk '/^total/ {printf "%s", $2}')
+total_mem=$(free -h | awk '/^Mem/ {printf "%s", $2}')
+total_swap=$(free -h | awk '/^Swap/ {printf "%s", $2}')
+
+uptime_info=$(uptime | awk '{print $3, $4}' | sed 's/,//')
+arch_info=$(uname -m)
+kernel_info=$(uname -r)
+current_date=$(date)
+
 echo "Thông tin máy chủ đang sử dụng:"
 echo "-----------------------------------------------------------"
-echo "Hệ điều hành: $os_info_no_core"
-echo "IP:          $(hostname -I | cut -f1 -d' ')"
-echo "Hostname:    $(hostname)"
-echo "Dung lượng:  $(df -h | awk '$NF=="/"{printf "%s", $2}')"
-echo "RAM:         $(free -h | awk '/^Mem/ {printf "%s", $2}')"
-echo "Swap:        $(free -h | awk '/^Swap/ {printf "%s", $2}')"
-echo "CPU:         $(lscpu | grep '^CPU(s):' | awk '{printf "%s", $2}') core(s)"
-echo "Load Average:     $loadavg"
+echo "Hệ điều hành:      $os_info_no_core"
+echo "IP:                 $(hostname -I | cut -f1 -d' ')"
+echo "Hostname:           $(hostname)"
+echo "Dung lượng:         $(df -h | awk '$NF=="/"{printf "%s", $2}')"
+echo "RAM:                $(free -h | awk '/^Mem/ {printf "%s", $2}')"
+echo "Swap:               $(free -h | awk '/^Swap/ {printf "%s", $2}')"
+echo "CPU:                $num_cores core(s) - $cpu_model - $cpu_frequency MHz"
+echo "Load Average:       $loadavg"
+echo "Arch:               $arch_info"
+echo "Kernel:             $kernel_info"
+echo "Date:               $current_date"
+echo "System Uptime:      $uptime_info"
 echo "-----------------------------------------------------------"
 echo -e "\n"
 
