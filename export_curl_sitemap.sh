@@ -26,10 +26,10 @@ for sub_sitemap in "${sub_sitemaps[@]}"; do
     fi
 done
 
-# Đọc từ file link.txt và sử dụng curl -I cho mỗi liên kết
+# Đọc từ file link.txt và sử dụng curl -s cho mỗi liên kết (thực hiện lệnh GET)
 while IFS= read -r link; do
-    # Thực hiện lệnh curl -I và ghi kết quả vào curl.log
-    curl -I "$link" >> "$curl_log" 2>&1
+    # Thực hiện lệnh curl -s và ghi kết quả vào curl.log
+    curl -s "$link" >> "$curl_log" 2>&1
 done < "$output_file"
 
 echo "Kết quả đã được ghi vào $curl_log"
