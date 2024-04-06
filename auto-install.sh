@@ -160,6 +160,24 @@ install_cyberpanel() {
     sh <(curl https://cyberpanel.net/install.sh || wget -O - https://cyberpanel.net/install.sh)
 }
 
+install_cpanel() {
+    os_info_file="/etc/os-release"
+
+    if [ -f "$os_info_file" ]; then
+        os_name=$(grep -oP '(?<=^NAME=).*' "$os_info_file" | tr -d '"')
+    else
+        os_name=""
+    fi
+
+    if [[ $os_name == *"CentOS"* ]]; then
+        echo "cPanel không hỗ trợ trên CentOS. Thoát."
+        exit 1
+    else
+        cd /home && curl -o latest -L https://securedownloads.cpanel.net/latest && sh latest
+    fi
+}
+
+
 install_cwp() {
     os_info_file="/etc/os-release"
 
@@ -317,7 +335,7 @@ install_webinoly_script() {
     supported_versions=("20.04" "22.04")
 
     if [[ "${supported_os[@]}" =~ "${os_name}" ]] && [[ "${supported_versions[@]}" =~ "${os_version}" ]]; then
-        wget -qO weby qrok.es/wy && sudo bash weby -lemp -ver=v1.17.8
+        wget -qO weby qrok.es/wy && sudo bash weby -lemp
     else
         echo "webinoly Script chỉ hỗ trợ Ubuntu 20.04, 22.04. Thoát."
         exit 1
@@ -423,6 +441,7 @@ install_control_panel() {
     echo "| 7. Cài đặt Webmin                           |"
     echo "| 8. Cài đặt DirectAdmin                      |"
     echo "| 9. Cài đặt VestaCP                          |"
+    echo "| 10. Cài đặt cPanel                          |"
     echo "| 0. Quay lại Menu Chính                      |"
     echo "+---------------------------------------------+"
     read -p "Nhập vào lựa chọn: " control_panel_choice
@@ -437,6 +456,7 @@ install_control_panel() {
         7) install_webmin ;;
         8) install_directadmin ;;
         9) install_vestacp ;;
+        10) install_cpanel ;;
         *) echo "Lựa chọn không hợp lệ. Thoát." && exit 1 ;;
     esac
 }
