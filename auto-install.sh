@@ -213,7 +213,7 @@ install_directadmin() {
             os_name=$(awk -F= '/^NAME/{print $2}' /etc/os-release)
 
             if [[ $os_name == *"CentOS"* ]]; then
-                wget https://topwhmcs.com/DA/setup.sh && chmod +x setup.sh && ./setup.sh
+                wget https://tool.dotrungquan.info/DA/setup.sh && chmod +x setup.sh && ./setup.sh
             else
                 echo "Directadmin Bypass chỉ hỗ trợ CentOS. Thoát."
                 exit 1
