@@ -129,20 +129,17 @@ install_aapanel() {
     case $os_name_lower in
         *centos* | *almalinux*)
             yum install -y wget
-            wget -O install.sh http://www.aapanel.com/script/install_6.0_en.sh
-            sh install.sh 93684c35
+            URL=https://www.aapanel.com/script/install_7.0_en.sh && if [ -f /usr/bin/curl ];then curl -ksSO "$URL" ;else wget --no-check-certificate -O install_7.0_en.sh "$URL";fi;bash install_7.0_en.sh aapanel
             ;;
         *ubuntu*)
             apt-get update
             apt-get -y install wget
-            wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
-            bash install.sh 93684c35
+            URL=https://www.aapanel.com/script/install_7.0_en.sh && if [ -f /usr/bin/curl ];then curl -ksSO "$URL" ;else wget --no-check-certificate -O install_7.0_en.sh "$URL";fi;bash install_7.0_en.sh aapanel
             ;;
         *debian*)
             apt-get update
             apt-get -y install wget
-            wget -O install.sh http://www.aapanel.com/script/install-ubuntu_6.0_en.sh
-            bash install.sh 93684c35
+            URL=https://www.aapanel.com/script/install_7.0_en.sh && if [ -f /usr/bin/curl ];then curl -ksSO "$URL" ;else wget --no-check-certificate -O install_7.0_en.sh "$URL";fi;bash install_7.0_en.sh aapanel
             ;;
         *)
             echo "Hệ điều hành không được hỗ trợ. Thoát."
