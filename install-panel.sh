@@ -35,6 +35,141 @@ print_header() {
     echo ""
 }
 
+# Function to check if VPS is clean
+check_vps_clean() {
+    local issues=()
+    
+    print_color $YELLOW "Đang kiểm tra trạng thái VPS..."
+    echo ""
+    
+    # Check for web servers
+    if systemctl is-active --quiet apache2 2>/dev/null || systemctl is-enabled --quiet apache2 2>/dev/null; then
+        issues+=("Apache2 đã được cài đặt")
+    fi
+    
+    if systemctl is-active --quiet nginx 2>/dev/null || systemctl is-enabled --quiet nginx 2>/dev/null; then
+        issues+=("Nginx đã được cài đặt")
+    fi
+    
+    if systemctl is-active --quiet httpd 2>/dev/null || systemctl is-enabled --quiet httpd 2>/dev/null; then
+        issues+=("HTTP (Apache) đã được cài đặt")
+    fi
+    
+    if systemctl is-active --quiet lighttpd 2>/dev/null || systemctl is-enabled --quiet lighttpd 2>/dev/null; then
+        issues+=("Lighttpd đã được cài đặt")
+    fi
+    
+    if systemctl is-active --quiet litespeed 2>/dev/null || systemctl is-enabled --quiet litespeed 2>/dev/null; then
+        issues+=("LiteSpeed đã được cài đặt")
+    fi
+    
+    # Check for databases
+    if systemctl is-active --quiet mysql 2>/dev/null || systemctl is-enabled --quiet mysql 2>/dev/null; then
+        issues+=("MySQL đã được cài đặt")
+    fi
+    
+    if systemctl is-active --quiet mariadb 2>/dev/null || systemctl is-enabled --quiet mariadb 2>/dev/null; then
+        issues+=("MariaDB đã được cài đặt")
+    fi
+    
+    if systemctl is-active --quiet mysqld 2>/dev/null || systemctl is-enabled --quiet mysqld 2>/dev/null; then
+        issues+=("MySQL/MariaDB đã được cài đặt")
+    fi
+    
+    if systemctl is-active --quiet postgresql 2>/dev/null || systemctl is-enabled --quiet postgresql 2>/dev/null; then
+        issues+=("PostgreSQL đã được cài đặt")
+    fi
+    
+    # Check for PHP
+    if command -v php >/dev/null 2>&1; then
+        php_version=$(php -v 2>/dev/null | head -n1 | grep -oP 'PHP \K[0-9]+\.[0-9]+')
+        if [ ! -z "$php_version" ]; then
+            issues+=("PHP $php_version đã được cài đặt")
+        fi
+    fi
+    
+    # Check for common PHP-FPM services
+    for php_ver in 7.4 8.0 8.1 8.2 8.3 8.4; do
+        if systemctl is-active --quiet php${php_ver}-fpm 2>/dev/null || systemctl is-enabled --quiet php${php_ver}-fpm 2>/dev/null; then
+            issues+=("PHP ${php_ver}-FPM đã được cài đặt")
+        fi
+    done
+    
+    # Check for control panels
+    if [ -d "/usr/local/CyberCP" ] || systemctl is-active --quiet lscpd 2>/dev/null; then
+        issues+=("CyberPanel đã được cài đặt")
+    fi
+    
+    if [ -d "/www/server" ] && [ -f "/www/server/panel/BT.py" ]; then
+        issues+=("AAPANEL/BT Panel đã được cài đặt")
+    fi
+    
+    if [ -d "/usr/local/hestia" ] || command -v v-list-users >/dev/null 2>&1; then
+        issues+=("HestiaCP đã được cài đặt")
+    fi
+    
+    if [ -d "/usr/local/vesta" ] || command -v v-list-users >/dev/null 2>&1; then
+        issues+=("VestaCP đã được cài đặt")
+    fi
+    
+    if [ -d "/home/cloudpanel" ] || systemctl is-active --quiet cloudpanel 2>/dev/null; then
+        issues+=("CloudPanel đã được cài đặt")
+    fi
+    
+    if [ -d "/usr/local/mgr5" ] || command -v mgrctl >/dev/null 2>&1; then
+        issues+=("FastPanel đã được cài đặt")
+    fi
+    
+    if systemctl is-active --quiet openpanel 2>/dev/null || [ -d "/opt/openpanel" ]; then
+        issues+=("OpenPanel đã được cài đặt")
+    fi
+    
+    if command -v easypanel >/dev/null 2>&1 || [ -d "/etc/easypanel" ]; then
+        issues+=("EasyPanel đã được cài đặt")
+    fi
+    
+    # Check for common ports
+    if netstat -tuln 2>/dev/null | grep -q ":80 \|:443 \|:3306 \|:8080 \|:8443"; then
+        local ports=$(netstat -tuln 2>/dev/null | grep -E ":80 |:443 |:3306 |:8080 |:8443 " | awk '{print $4}' | cut -d: -f2 | sort -u | tr '\n' ' ')
+        if [ ! -z "$ports" ]; then
+            issues+=("Các port web/database đang được sử dụng: $ports")
+        fi
+    fi
+    
+    # Return results
+    if [ ${#issues[@]} -eq 0 ]; then
+        print_color $GREEN "✓ VPS sạch - Sẵn sàng cài đặt Control Panel"
+        echo ""
+        return 0
+    else
+        print_color $RED "✗ VPS đã có các dịch vụ được cài đặt:"
+        echo ""
+        for issue in "${issues[@]}"; do
+            print_color $RED "  • $issue"
+        done
+        echo ""
+        print_color $YELLOW "CẢNH BÁO: Control Panel cần VPS trắng để tránh xung đột!"
+        print_color $YELLOW "Vui lòng sử dụng VPS mới hoặc xóa các dịch vụ hiện tại."
+        echo ""
+        return 1
+    fi
+}
+
+# Function to force check bypass
+force_check_bypass() {
+    print_color $YELLOW "Bạn có muốn bỏ qua kiểm tra và tiếp tục cài đặt? (NGUY HIỂM)"
+    print_color $RED "Chọn 'y' chỉ khi bạn chắc chắn biết mình đang làm gì!"
+    print_color $BLUE "Tiếp tục cài đặt? (y/N): "
+    read -r force_install
+    if [[ $force_install =~ ^[Yy]$ ]]; then
+        print_color $YELLOW "⚠️  Đang bỏ qua kiểm tra và tiếp tục cài đặt..."
+        return 0
+    else
+        print_color $GREEN "Hủy cài đặt. Khuyến nghị sử dụng VPS mới."
+        return 1
+    fi
+}
+
 # Function to show main menu
 show_menu() {
     print_color $GREEN "Chọn Control Panel bạn muốn cài đặt:"
@@ -47,6 +182,7 @@ show_menu() {
     print_color $YELLOW "6. FASTPANEL"
     print_color $YELLOW "7. OpenPanel"
     print_color $YELLOW "8. EasyPanel"
+    print_color $PURPLE "9. Kiểm tra trạng thái VPS"
     print_color $RED "0. Thoát"
     echo ""
     print_color $BLUE "Nhập lựa chọn của bạn: "
@@ -201,6 +337,14 @@ install_easypanel() {
 # Function to confirm installation
 confirm_installation() {
     local panel_name=$1
+    
+    # First check if VPS is clean
+    if ! check_vps_clean; then
+        if ! force_check_bypass; then
+            return 1
+        fi
+    fi
+    
     echo ""
     print_color $YELLOW "Bạn có chắc chắn muốn cài đặt $panel_name? (y/n): "
     read -r confirm
