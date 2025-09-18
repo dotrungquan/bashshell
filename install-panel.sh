@@ -1,0 +1,298 @@
+#!/bin/bash
+
+# Script cài đặt Control Panel
+# Author: DOTRUNGQUAN.INFO
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+CYAN='\033[0;36m'
+WHITE='\033[1;37m'
+NC='\033[0m' # No Color
+
+# Function to print colored text
+print_color() {
+    printf "${1}${2}${NC}\n"
+}
+
+# Function to print header
+print_header() {
+    clear
+    print_color $CYAN "╔════════════════════════════════════════════════════════════════╗"
+    print_color $CYAN "║                    CONTROL PANEL INSTALLER                    ║"
+    print_color $CYAN "║                   Author: DOTRUNGQUAN.INFO                    ║"
+    print_color $CYAN "╠════════════════════════════════════════════════════════════════╣"
+    print_color $WHITE "║ Liên hệ:                                                      ║"
+    print_color $WHITE "║ Facebook: https://fb.com/dotrungquan.info/                    ║"
+    print_color $WHITE "║ Zalo: https://zalo.me/0969030302                              ║"
+    print_color $WHITE "║ Telegram: http://t.me/dotrungquan                             ║"
+    print_color $WHITE "║ Phone: 0969.03.03.02                                         ║"
+    print_color $WHITE "║ Email: lienhe@dotrungquan.info                                ║"
+    print_color $CYAN "╚════════════════════════════════════════════════════════════════╝"
+    echo ""
+}
+
+# Function to show main menu
+show_menu() {
+    print_color $GREEN "Chọn Control Panel bạn muốn cài đặt:"
+    echo ""
+    print_color $YELLOW "1. CyberPanel"
+    print_color $YELLOW "2. AAPANEL"
+    print_color $YELLOW "3. HestiaCP"
+    print_color $YELLOW "4. VestaCP"
+    print_color $YELLOW "5. CloudPanel"
+    print_color $YELLOW "6. FASTPANEL"
+    print_color $YELLOW "7. OpenPanel"
+    print_color $YELLOW "8. EasyPanel"
+    print_color $RED "0. Thoát"
+    echo ""
+    print_color $BLUE "Nhập lựa chọn của bạn: "
+}
+
+# Function to install CyberPanel
+install_cyberpanel() {
+    print_color $GREEN "Đang cài đặt CyberPanel..."
+    sh <(curl https://cyberpanel.net/install.sh || wget -O - https://cyberpanel.net/install.sh)
+}
+
+# Function to install AAPANEL
+install_aapanel() {
+    print_color $GREEN "Đang cài đặt AAPANEL..."
+    URL=https://www.aapanel.com/script/install_7.0_en.sh && if [ -f /usr/bin/curl ];then curl -ksSO "$URL" ;else wget --no-check-certificate -O install_7.0_en.sh "$URL";fi;bash install_7.0_en.sh aapanel
+}
+
+# Function to install HestiaCP
+install_hestiacp() {
+    print_color $GREEN "Đang cài đặt HestiaCP..."
+    wget https://raw.githubusercontent.com/hestiacp/hestiacp/release/install/hst-install.sh
+    bash hst-install.sh
+}
+
+# Function to install VestaCP
+install_vestacp() {
+    print_color $GREEN "Đang cài đặt VestaCP..."
+    curl -O https://vestacp.com/pub/vst-install.sh
+    bash vst-install.sh
+}
+
+# Function to show CloudPanel submenu
+show_cloudpanel_menu() {
+    print_color $GREEN "Chọn phiên bản Database cho CloudPanel:"
+    echo ""
+    print_color $YELLOW "1. MySQL 8.4"
+    print_color $YELLOW "2. MySQL 8.0"
+    print_color $YELLOW "3. MariaDB 11.4"
+    print_color $YELLOW "4. MariaDB 10.11"
+    print_color $RED "0. Quay lại"
+    echo ""
+    print_color $BLUE "Nhập lựa chọn của bạn: "
+}
+
+# Function to install CloudPanel
+install_cloudpanel() {
+    while true; do
+        print_header
+        show_cloudpanel_menu
+        read -r choice
+        
+        case $choice in
+            1)
+                print_color $GREEN "Đang cài đặt CloudPanel với MySQL 8.4..."
+                curl -sS https://installer.cloudpanel.io/ce/v2/install.sh -o install.sh
+                echo "985bed747446eabad433c2e8115e21d6898628fa982c9e55ff6cd0d7c35b501d install.sh" | sha256sum -c && sudo DB_ENGINE=MYSQL_8.4 bash install.sh
+                break
+                ;;
+            2)
+                print_color $GREEN "Đang cài đặt CloudPanel với MySQL 8.0..."
+                curl -sS https://installer.cloudpanel.io/ce/v2/install.sh -o install.sh
+                echo "985bed747446eabad433c2e8115e21d6898628fa982c9e55ff6cd0d7c35b501d install.sh" | sha256sum -c && sudo DB_ENGINE=MYSQL_8.0 bash install.sh
+                break
+                ;;
+            3)
+                print_color $GREEN "Đang cài đặt CloudPanel với MariaDB 11.4..."
+                curl -sS https://installer.cloudpanel.io/ce/v2/install.sh -o install.sh
+                echo "985bed747446eabad433c2e8115e21d6898628fa982c9e55ff6cd0d7c35b501d install.sh" | sha256sum -c && sudo DB_ENGINE=MARIADB_11.4 bash install.sh
+                break
+                ;;
+            4)
+                print_color $GREEN "Đang cài đặt CloudPanel với MariaDB 10.11..."
+                curl -sS https://installer.cloudpanel.io/ce/v2/install.sh -o install.sh
+                echo "985bed747446eabad433c2e8115e21d6898628fa982c9e55ff6cd0d7c35b501d install.sh" | sha256sum -c && sudo DB_ENGINE=MARIADB_10.11 bash install.sh
+                break
+                ;;
+            0)
+                break
+                ;;
+            *)
+                print_color $RED "Lựa chọn không hợp lệ. Vui lòng thử lại."
+                sleep 2
+                ;;
+        esac
+    done
+}
+
+# Function to show FASTPANEL options and install
+install_fastpanel() {
+    print_color $GREEN "Đang kiểm tra các phiên bản Database có sẵn cho FASTPANEL..."
+    wget https://repo.fastpanel.direct/install_fastpanel.sh
+    
+    print_color $YELLOW "Các phiên bản Database có sẵn:"
+    bash install_fastpanel.sh --help | grep 'Available versions'
+    
+    echo ""
+    print_color $GREEN "Chọn phiên bản Database:"
+    print_color $YELLOW "1. default"
+    print_color $YELLOW "2. mariadb10.6"
+    print_color $YELLOW "3. mariadb10.11"
+    print_color $YELLOW "4. mysql8.0"
+    print_color $YELLOW "5. percona8.0"
+    print_color $RED "0. Hủy cài đặt"
+    echo ""
+    print_color $BLUE "Nhập lựa chọn của bạn: "
+    read -r db_choice
+    
+    case $db_choice in
+        1)
+            print_color $GREEN "Đang cài đặt FASTPANEL với database mặc định..."
+            bash install_fastpanel.sh
+            ;;
+        2)
+            print_color $GREEN "Đang cài đặt FASTPANEL với MariaDB 10.6..."
+            bash install_fastpanel.sh -m mariadb10.6
+            ;;
+        3)
+            print_color $GREEN "Đang cài đặt FASTPANEL với MariaDB 10.11..."
+            bash install_fastpanel.sh -m mariadb10.11
+            ;;
+        4)
+            print_color $GREEN "Đang cài đặt FASTPANEL với MySQL 8.0..."
+            bash install_fastpanel.sh -m mysql8.0
+            ;;
+        5)
+            print_color $GREEN "Đang cài đặt FASTPANEL với Percona 8.0..."
+            bash install_fastpanel.sh -m percona8.0
+            ;;
+        0)
+            print_color $YELLOW "Hủy cài đặt FASTPANEL."
+            return
+            ;;
+        *)
+            print_color $RED "Lựa chọn không hợp lệ. Sử dụng database mặc định."
+            bash install_fastpanel.sh
+            ;;
+    esac
+}
+
+# Function to install OpenPanel
+install_openpanel() {
+    print_color $GREEN "Đang cài đặt OpenPanel..."
+    bash <(curl -sSL https://openpanel.org)
+}
+
+# Function to install EasyPanel
+install_easypanel() {
+    print_color $GREEN "Đang cài đặt EasyPanel..."
+    curl -sSL https://get.easypanel.io | sh
+}
+
+# Function to confirm installation
+confirm_installation() {
+    local panel_name=$1
+    echo ""
+    print_color $YELLOW "Bạn có chắc chắn muốn cài đặt $panel_name? (y/n): "
+    read -r confirm
+    if [[ $confirm =~ ^[Yy]$ ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Main script loop
+main() {
+    while true; do
+        print_header
+        show_menu
+        read -r choice
+        
+        case $choice in
+            1)
+                if confirm_installation "CyberPanel"; then
+                    install_cyberpanel
+                    print_color $GREEN "Cài đặt CyberPanel hoàn tất!"
+                    read -p "Nhấn Enter để tiếp tục..."
+                fi
+                ;;
+            2)
+                if confirm_installation "AAPANEL"; then
+                    install_aapanel
+                    print_color $GREEN "Cài đặt AAPANEL hoàn tất!"
+                    read -p "Nhấn Enter để tiếp tục..."
+                fi
+                ;;
+            3)
+                if confirm_installation "HestiaCP"; then
+                    install_hestiacp
+                    print_color $GREEN "Cài đặt HestiaCP hoàn tất!"
+                    read -p "Nhấn Enter để tiếp tục..."
+                fi
+                ;;
+            4)
+                if confirm_installation "VestaCP"; then
+                    install_vestacp
+                    print_color $GREEN "Cài đặt VestaCP hoàn tất!"
+                    read -p "Nhấn Enter để tiếp tục..."
+                fi
+                ;;
+            5)
+                if confirm_installation "CloudPanel"; then
+                    install_cloudpanel
+                    print_color $GREEN "Cài đặt CloudPanel hoàn tất!"
+                    read -p "Nhấn Enter để tiếp tục..."
+                fi
+                ;;
+            6)
+                if confirm_installation "FASTPANEL"; then
+                    install_fastpanel
+                    print_color $GREEN "Cài đặt FASTPANEL hoàn tất!"
+                    read -p "Nhấn Enter để tiếp tục..."
+                fi
+                ;;
+            7)
+                if confirm_installation "OpenPanel"; then
+                    install_openpanel
+                    print_color $GREEN "Cài đặt OpenPanel hoàn tất!"
+                    read -p "Nhấn Enter để tiếp tục..."
+                fi
+                ;;
+            8)
+                if confirm_installation "EasyPanel"; then
+                    install_easypanel
+                    print_color $GREEN "Cài đặt EasyPanel hoàn tất!"
+                    read -p "Nhấn Enter để tiếp tục..."
+                fi
+                ;;
+            0)
+                print_color $GREEN "Cảm ơn bạn đã sử dụng script!"
+                print_color $CYAN "Liên hệ hỗ trợ: lienhe@dotrungquan.info"
+                exit 0
+                ;;
+            *)
+                print_color $RED "Lựa chọn không hợp lệ. Vui lòng thử lại."
+                sleep 2
+                ;;
+        esac
+    done
+}
+
+# Check if running as root
+if [[ $EUID -ne 0 ]]; then
+   print_color $RED "Script này cần chạy với quyền root. Vui lòng chạy với sudo."
+   exit 1
+fi
+
+# Run main function
+main
